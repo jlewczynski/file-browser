@@ -1,6 +1,16 @@
+import { deepCopyNode, ITreeNode } from './TreeNode';
+
 class FileBrowser extends HTMLElement {
-    constructor() {
+    private rootFile: ITreeNode;
+    constructor(nodes?: ITreeNode[]) {
         super();
+        this.rootFile = {
+            type: 'folder',
+            name: 'Files',
+            modified: new Date(),
+            size: 0,
+            children: nodes ?? []
+        }
     }
 
     connectedCallback() {
@@ -91,10 +101,30 @@ class FileBrowser extends HTMLElement {
             </div>
         </div>`;
     }
+
+    get files() {
+        return this.rootFile.children?.map(n => deepCopyNode(n)) || [];
+    }
+    set files(value: ITreeNode[]) {
+        this.rootFile.children = value.map(n => deepCopyNode(n));
+    }
 }
 
 customElements.define('file-browser', FileBrowser);
 
+const testData: ITreeNode[] = [
+    {type: 'folder', name: 'Documents', modified: new Date(), size: 0, children: [
+        {type: 'file', name: 'Description.txt', modified: new Date(), size: 1},
+        {type: 'file', name: 'Description.rtf', modified: new Date(), size: 2},
+        {type: 'file', name: 'Description.pdf', modified: new Date(), size: 3},
+    ]},
+    {type: 'folder', name: 'Images', modified: new Date(), size: 0},
+    {type: 'folder', name: 'System', modified: new Date(), size: 0},
+    {type: 'file', name: 'Description.txt', modified: new Date(), size: 1},
+    {type: 'file', name: 'Description.rtf', modified: new Date(), size: 2},
+];
+
 (window as any).FileBrowser = {
-    init: () => new FileBrowser()
+    init: (nodes?: ITreeNode[]) => new FileBrowser(nodes),
+    testData
 }
