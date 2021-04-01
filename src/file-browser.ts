@@ -1,7 +1,12 @@
+import { FileList } from './FileList';
 import { deepCopyNode, ITreeNode } from './TreeNode';
+import { TreePanel } from './TreePanel';
 
 class FileBrowser extends HTMLElement {
+
     private rootFile: ITreeNode;
+    private rendered = false;
+
     constructor(nodes?: ITreeNode[]) {
         super();
         this.rootFile = {
@@ -14,92 +19,15 @@ class FileBrowser extends HTMLElement {
     }
 
     connectedCallback() {
-        this.innerHTML = `
-        <div class="viewer">
-            <div class="left-panel">
-                <div class="node selected">
-                    <span class="arrow opened"> </span>
-                    <div class="contains">
-                        <div class="label">
-                            <img src="./img/dir.png" />
-                            <span class="dirname">Files</span>
-                        </div>
+        this.classList.add('viewer');
 
-                        <div class="node">
-                            <span class="arrow closed"> </span>
-                            <div class="contains">
-                                <div class="label">
-                                    <img src="./img/dir.png" />
-                                    <span class="dirname">Documents</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="node">
-                            <span class="arrow none"> </span>
-                            <div class="contains">
-                                <div class="label">
-                                    <img src="./img/dir.png" />
-                                    <span class="dirname">Images</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="node">
-                            <span class="arrow none"> </span>
-                            <div class="contains">
-                                <div class="label">
-                                    <img src="./img/dir.png" />
-                                    <span class="dirname">System</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="right-panel">
-                <div class="row header">
-                    <div class="cell name-column">
-                        <div class="icon"></div>Name
-                    </div>
-                    <div class="cell date-column">Date Modified</div>
-                    <div class="cell size-column">File Size</div>
-                </div>
+        const treePanel = new TreePanel(this.rootFile);
+        this.appendChild(treePanel);
 
-                <div class="row">
-                    <div class="cell name-column">
-                        <img class="icon" src="./img/dir.png" />Documents
-                    </div>
-                    <div class="cell date-column">7/6/2020</div>
-                    <div class="cell size-column"> </div>
-                </div>
-                <div class="row">
-                    <div class="cell name-column">
-                        <img class="icon" src="./img/dir.png" />Images
-                    </div>
-                    <div class="cell date-column">7/6/2020</div>
-                    <div class="cell size-column"> </div>
-                </div>
-                <div class="row">
-                    <div class="cell name-column">
-                        <img class="icon" src="./img/dir.png" />System</div>
-                    <div class="cell date-column">7/6/2020</div>
-                    <div class="cell size-column"> </div>
-                </div>
-                <div class="row">
-                    <div class="cell name-column">
-                        <img class="icon" src="./img/rtf.png" />Description.rtf
-                    </div>
-                    <div class="cell date-column">7/6/2020</div>
-                    <div class="cell size-column">1 KB</div>
-                </div>
-                <div class="row selected">
-                    <div class="cell name-column">
-                        <img class="icon" src="./img/txt.png" />Description.txt
-                    </div>
-                    <div class="cell date-column">7/6/2020</div>
-                    <div class="cell size-column">2 KB</div>
-                </div>
-            </div>
-        </div>`;
+        const fileList = new FileList(this.rootFile.children || []);
+        this.appendChild(fileList);
+
+        this.rendered = true;
     }
 
     get files() {
@@ -107,6 +35,14 @@ class FileBrowser extends HTMLElement {
     }
     set files(value: ITreeNode[]) {
         this.rootFile.children = value.map(n => deepCopyNode(n));
+        //update sub-panels
+        if(this.rendered) {
+            const treePanel = this.getElementsByTagName('tree-panel').item(0) as TreePanel;
+            treePanel.rootFile = this.rootFile;
+            const fileList = this.getElementsByTagName('file-list').item(0) as FileList;
+            fileList.files = this.rootFile.children || [];
+
+        }
     }
 }
 
