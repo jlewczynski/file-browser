@@ -20,9 +20,7 @@ export class FileList extends HTMLElement {
         <div class="cell date-column">Date Modified</div>
         <div class="cell size-column">File Size</div>`;
 
-        this._fileNodes.forEach(node => {
-            this.appendChild(new FileListEntry(node))
-        });
+        this.update();
 
         this.addEventListener('nodeselect', e => {
             if(this._selected)
@@ -34,6 +32,15 @@ export class FileList extends HTMLElement {
 
     set files(value: ITreeNode[]) {
         this._fileNodes = value;
+        this.update();
+    }
+
+    private update() {
+        while(this.childElementCount > 1)
+            this.lastElementChild?.remove();
+        this._fileNodes.forEach(node => {
+            this.appendChild(new FileListEntry(node))
+        });
     }
 }
 

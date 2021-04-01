@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     mode: 'development',
-    entry: './src/file-browser.ts',
+    entry: './src/FileBrowser.ts',
     output: {
         path: path.resolve(__dirname, 'public'),
         filename: 'js/file-browser.bundle.js',
