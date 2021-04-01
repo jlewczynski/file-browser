@@ -1,34 +1,57 @@
 import { TreeEntry } from "./TreeEntry";
-import { ITreeNode } from "./TreeNode";
+import { getPath, ITreeNode } from "./TreeNode";
 
 export class TreePanel extends HTMLElement {
-    private fileNode: ITreeNode;
-    private selected: TreeEntry | null = null;
+    private _rootNode: ITreeNode;
+    private _selected: TreeEntry | null = null;
 
-    constructor(rootFile: ITreeNode) {
+    constructor(rootNode: ITreeNode) {
         super();
-        this.fileNode = rootFile;
+        this._rootNode = rootNode;
     }
 
     connectedCallback() {
-        const root = new TreeEntry(this.fileNode, true, true);
-        this.selected = root;
+        const root = new TreeEntry(this._rootNode, true, true);
+        this._selected = root;
         root.addEventListener('nodeselect', e => {
-            if(this.selected)
-                this.selected.selected = false;
-            this.selected = e.target as TreeEntry;
-            this.selected.selected = true;
+            if(this._selected)
+                this._selected.selected = false;
+            this._selected = e.target as TreeEntry;
+            this._selected.selected = true;
         })
         this.appendChild(root);
     }
 
-    set rootFile(value: ITreeNode) {
-        this.fileNode = value;
+    set rootNode(value: ITreeNode) {
+        this._rootNode = value;
+        if(this.firstElementChild)
+            (this.firstElementChild as TreeEntry).treeNode = this._rootNode;
     }
 
     select(node: ITreeNode) {
-        const parent = this.selected ?? this.firstElementChild as TreeEntry;
+        const parent = this._selected ?? this.firstElementChild as TreeEntry;
         parent.selectChild(node);
+    }
+
+    get selected() {
+        return this._selected?.treeNode || null;
+    }
+
+    set selected(node: ITreeNode | null) {
+        if(!node && this._selected) {
+            this._selected.selected = false;
+            this._selected = null;
+        } else if(node) {
+            if(node.type !== 'folder')
+                throw new Error('You can select only a folder.');
+
+            const path = getPath(this._rootNode, node);
+            let next = path.shift();
+            while(next) {
+                this.select(next);
+                next = path.shift();
+            }
+        }
     }
 }
 

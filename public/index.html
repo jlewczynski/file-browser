@@ -11,9 +11,39 @@
     <script src="/js/file-browser.bundle.js"></script>
 </head>
 <body>
-    <div id="file-browser"></div>
+    <file-browser id="browser"></file-browser>
+
     <script>
-        document.getElementById("file-browser").replaceWith(FileBrowser.init(FileBrowser.testData));
+
+        const testData = [
+            {type: 'folder', name: 'Documents', modified: new Date(), size: 0, children: [
+                {type: 'folder', name: 'Something', modified: new Date(), size: 0, children: []},
+                {type: 'folder', name: 'Something else', modified: new Date(), size: 0, children: [
+                    {type: 'file', name: 'Description.txt', modified: new Date(), size: 1024},
+                    {type: 'file', name: 'Description.txt', modified: new Date(), size: 2000},
+                ]},
+                {type: 'file', name: 'Description.txt', modified: new Date(), size: 1},
+                {type: 'file', name: 'Description.rtf', modified: new Date(), size: 2},
+                {type: 'file', name: 'Description.pdf', modified: new Date(), size: 3},
+            ]},
+            {type: 'folder', name: 'Images', modified: new Date(), size: 0},
+            {type: 'folder', name: 'System', modified: new Date(), size: 0},
+            {type: 'file', name: 'Description.txt', modified: new Date(), size: 1},
+            {type: 'file', name: 'Description.rtf', modified: new Date(), size: 2},
+        ];
+
+        //create a file browser
+        const fileBrowser = document.getElementById('browser');
+        //setup the file data
+        fileBrowser.files = testData;
+        //add an event handler to log folder selection changes
+        fileBrowser.addEventListener('nodeselect', e => console.log(e.detail.entry));
+        //read the files
+        console.log(fileBrowser.files);
+        //change the selection to a predefined subnode
+        fileBrowser.selected = testData[0].children[1];
+        //read the selection
+        console.log(fileBrowser.selected);
     </script>
 </body>
 </html>

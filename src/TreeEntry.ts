@@ -2,17 +2,17 @@ import { NodeSelectEvent } from "./NodeSelectEvent";
 import { ITreeNode } from "./TreeNode";
 
 export class TreeEntry extends HTMLElement {
-    private _entry: ITreeNode;
+    private _treeNode: ITreeNode;
     private _opened: boolean;
     private _selected: boolean;
     private _subdirs: ITreeNode[];
 
-    constructor(entry: ITreeNode, selected?: boolean, opened?: boolean) {
+    constructor(treeNode: ITreeNode, selected?: boolean, opened?: boolean) {
         super();
-        if(entry.type === 'file')
+        if(treeNode.type === 'file')
             throw new Error('Tree entry node must be a folder.');
-        this._entry = entry;
-        this._subdirs = entry.children?.filter(e => e.type === 'folder') || [];
+        this._treeNode = treeNode;
+        this._subdirs = treeNode.children?.filter(e => e.type === 'folder') || [];
         this._opened = opened ?? false;
         this._selected = selected ?? false;
     }
@@ -31,14 +31,14 @@ export class TreeEntry extends HTMLElement {
         label.className = 'label';
         label.innerHTML = `
         <img src="./img/dir.png" />
-        <span class="dirname">${this._entry.name}</span>`;
+        <span class="dirname">${this._treeNode.name}</span>`;
         label.onclick = () => this.selectClicked();
 
         this.update();
     }
 
     selectClicked() {
-        this.dispatchEvent(new NodeSelectEvent(this._entry));
+        this.dispatchEvent(new NodeSelectEvent(this._treeNode));
     }
 
     set selected(val: boolean) {
@@ -49,8 +49,13 @@ export class TreeEntry extends HTMLElement {
             this.classList.remove('selected');
     }
 
-    get entry() {
-        return this._entry;
+    get treeNode() {
+        return this._treeNode;
+    }
+    set treeNode(v: ITreeNode) {
+        this._treeNode = v;
+        this._subdirs = v.children?.filter(e => e.type === 'folder') || [];
+        this.update();
     }
 
     selectChild(entry: ITreeNode) {
@@ -58,7 +63,7 @@ export class TreeEntry extends HTMLElement {
             this.toggle();
         let child = this.lastElementChild?.firstElementChild?.nextElementSibling;
         while(child) {
-            if((child as TreeEntry).entry === entry) {
+            if((child as TreeEntry).treeNode === entry) {
                 (child as TreeEntry).selectClicked();
                 break;
             }
@@ -67,10 +72,10 @@ export class TreeEntry extends HTMLElement {
     }
 
     toggle() {
-        if(!this._entry.children?.length)
+        if(!this._treeNode.children?.length)
             return;
         this._opened = !this._opened;
-        if(!this._opened)
+        if(!this._opened && this.querySelectorAll('.selected').length > 0)
             this.selectClicked();
         this.update();
     }

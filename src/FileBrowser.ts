@@ -5,13 +5,13 @@ import { TreePanel } from './TreePanel';
 
 class FileBrowser extends HTMLElement {
 
-    private rootFile: ITreeNode;
-    private treePanel: TreePanel | null = null;
-    private fileList: FileList | null = null;
+    private _rootNode: ITreeNode;
+    private _treePanel: TreePanel | null = null;
+    private _fileList: FileList | null = null;
 
     constructor(nodes?: ITreeNode[]) {
         super();
-        this.rootFile = {
+        this._rootNode = {
             type: 'folder',
             name: 'Files',
             modified: new Date(),
@@ -23,53 +23,45 @@ class FileBrowser extends HTMLElement {
     connectedCallback() {
         this.classList.add('viewer');
 
-        this.treePanel = this.appendChild(new TreePanel(this.rootFile));
-        this.treePanel.addEventListener('nodeselect', e => {
-            if(this.fileList)
-                this.fileList.files = (e as NodeSelectEvent).detail.entry.children || [];
+        this._treePanel = this.appendChild(new TreePanel(this._rootNode));
+        this._treePanel.addEventListener('nodeselect', e => {
+            if(this._fileList)
+                this._fileList.files = (e as NodeSelectEvent).detail.entry.children || [];
         })
 
-        this.fileList = this.appendChild(new FileList(this.rootFile.children || []));
-        this.fileList.addEventListener('nodeselect', e => {
-            e.preventDefault();
-            if((e as NodeSelectEvent).detail.open && this.treePanel)
-                this.treePanel.select((e as NodeSelectEvent).detail.entry);
+        this._fileList = this.appendChild(new FileList(this._rootNode.children || []));
+        this._fileList.addEventListener('nodeselect', e => {
+            e.stopPropagation();
+            if((e as NodeSelectEvent).detail.open && this._treePanel)
+                this._treePanel.select((e as NodeSelectEvent).detail.entry);
         })
+    }
+
+    disconnectedCallback() {
+        this._treePanel = null;
+        this._fileList = null;
     }
 
     get files() {
-        return this.rootFile.children?.map(n => deepCopyNode(n)) || [];
+        return this._rootNode.children || [];
     }
     set files(value: ITreeNode[]) {
-        this.rootFile.children = value.map(n => deepCopyNode(n));
+        this._rootNode.children = value;
         //update sub-panels
-        if(this.treePanel)
-            this.treePanel.rootFile = this.rootFile;
-        if(this.fileList)
-            this.fileList.files = this.rootFile.children || [];
+        if(this._treePanel)
+            this._treePanel.rootNode = this._rootNode;
+        if(this._fileList)
+            this._fileList.files = this._rootNode.children || [];
+    }
+
+    get selected() {
+        return this._treePanel?.selected || null;
+    }
+
+    set selected(v: ITreeNode | null) {
+        if(this._treePanel)
+            this._treePanel.selected = v;
     }
 }
 
 customElements.define('file-browser', FileBrowser);
-
-const testData: ITreeNode[] = [
-    {type: 'folder', name: 'Documents', modified: new Date(), size: 0, children: [
-        {type: 'folder', name: 'Something', modified: new Date(), size: 0, children: []},
-        {type: 'folder', name: 'Something else', modified: new Date(), size: 0, children: [
-            {type: 'file', name: 'Description.txt', modified: new Date(), size: 1024},
-            {type: 'file', name: 'Description.txt', modified: new Date(), size: 2000},
-        ]},
-        {type: 'file', name: 'Description.txt', modified: new Date(), size: 1},
-        {type: 'file', name: 'Description.rtf', modified: new Date(), size: 2},
-        {type: 'file', name: 'Description.pdf', modified: new Date(), size: 3},
-    ]},
-    {type: 'folder', name: 'Images', modified: new Date(), size: 0},
-    {type: 'folder', name: 'System', modified: new Date(), size: 0},
-    {type: 'file', name: 'Description.txt', modified: new Date(), size: 1},
-    {type: 'file', name: 'Description.rtf', modified: new Date(), size: 2},
-];
-
-(window as any).FileBrowser = {
-    init: (nodes?: ITreeNode[]) => new FileBrowser(nodes),
-    testData
-}
