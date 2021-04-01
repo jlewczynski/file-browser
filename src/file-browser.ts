@@ -41,7 +41,6 @@ class FileBrowser extends HTMLElement {
             treePanel.rootFile = this.rootFile;
             const fileList = this.getElementsByTagName('file-list').item(0) as FileList;
             fileList.files = this.rootFile.children || [];
-
         }
     }
 }
