@@ -16,6 +16,10 @@ export class FileListEntry extends HTMLElement {
         this.className = 'row';
         this.selected = this._selected;
         this.onclick = () => this.selectClicked();
+        this.ondblclick = () => {
+            if(this._entry.type === 'folder')
+                this.selectClicked(true);
+        }
 
         this.addCell('name', this._entry.name, getIcon(this._entry));
         this.addCell('date', this._entry.modified.toLocaleDateString());
@@ -30,8 +34,8 @@ export class FileListEntry extends HTMLElement {
         column.appendChild(document.createTextNode(text));
     }
 
-    private selectClicked() {
-        this.dispatchEvent(new NodeSelectEvent(this._entry));
+    private selectClicked(open?: boolean) {
+        this.dispatchEvent(new NodeSelectEvent(this._entry, open));
     }
 
     set selected(val: boolean) {

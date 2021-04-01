@@ -25,6 +25,11 @@ export class TreePanel extends HTMLElement {
     set rootFile(value: ITreeNode) {
         this.fileNode = value;
     }
+
+    select(node: ITreeNode) {
+        const parent = this.selected ?? this.firstElementChild as TreeEntry;
+        parent.selectChild(node);
+    }
 }
 
 customElements.define('tree-panel', TreePanel);

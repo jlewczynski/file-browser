@@ -30,7 +30,11 @@ class FileBrowser extends HTMLElement {
         })
 
         this.fileList = this.appendChild(new FileList(this.rootFile.children || []));
-        this.fileList.addEventListener('nodeselet', e => {})
+        this.fileList.addEventListener('nodeselect', e => {
+            e.preventDefault();
+            if((e as NodeSelectEvent).detail.open && this.treePanel)
+                this.treePanel.select((e as NodeSelectEvent).detail.entry);
+        })
     }
 
     get files() {
@@ -50,6 +54,11 @@ customElements.define('file-browser', FileBrowser);
 
 const testData: ITreeNode[] = [
     {type: 'folder', name: 'Documents', modified: new Date(), size: 0, children: [
+        {type: 'folder', name: 'Something', modified: new Date(), size: 0, children: []},
+        {type: 'folder', name: 'Something else', modified: new Date(), size: 0, children: [
+            {type: 'file', name: 'Description.txt', modified: new Date(), size: 1024},
+            {type: 'file', name: 'Description.txt', modified: new Date(), size: 2000},
+        ]},
         {type: 'file', name: 'Description.txt', modified: new Date(), size: 1},
         {type: 'file', name: 'Description.rtf', modified: new Date(), size: 2},
         {type: 'file', name: 'Description.pdf', modified: new Date(), size: 3},

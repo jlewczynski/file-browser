@@ -37,7 +37,7 @@ export class TreeEntry extends HTMLElement {
         this.update();
     }
 
-    private selectClicked() {
+    selectClicked() {
         this.dispatchEvent(new NodeSelectEvent(this._entry));
     }
 
@@ -47,6 +47,23 @@ export class TreeEntry extends HTMLElement {
             this.classList.add('selected');
         else
             this.classList.remove('selected');
+    }
+
+    get entry() {
+        return this._entry;
+    }
+
+    selectChild(entry: ITreeNode) {
+        if(!this._opened)
+            this.toggle();
+        let child = this.lastElementChild?.firstElementChild?.nextElementSibling;
+        while(child) {
+            if((child as TreeEntry).entry === entry) {
+                (child as TreeEntry).selectClicked();
+                break;
+            }
+            child = child.nextElementSibling;
+        }
     }
 
     toggle() {
