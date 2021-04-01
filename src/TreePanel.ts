@@ -1,7 +1,9 @@
+import { TreeEntry } from "./TreeEntry";
 import { ITreeNode } from "./TreeNode";
 
 export class TreePanel extends HTMLElement {
     private fileNode: ITreeNode;
+    private selected: TreeEntry | null = null;
 
     constructor(rootFile: ITreeNode) {
         super();
@@ -9,44 +11,8 @@ export class TreePanel extends HTMLElement {
     }
 
     connectedCallback() {
-        this.innerHTML =
-        `<div class="node selected">
-            <span class="arrow opened"> </span>
-            <div class="contains">
-                <div class="label">
-                    <img src="./img/dir.png" />
-                    <span class="dirname">Files</span>
-                </div>
-
-                <div class="node">
-                    <span class="arrow closed"> </span>
-                    <div class="contains">
-                        <div class="label">
-                            <img src="./img/dir.png" />
-                            <span class="dirname">Documents</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="node">
-                    <span class="arrow none"> </span>
-                    <div class="contains">
-                        <div class="label">
-                            <img src="./img/dir.png" />
-                            <span class="dirname">Images</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="node">
-                    <span class="arrow none"> </span>
-                    <div class="contains">
-                        <div class="label">
-                            <img src="./img/dir.png" />
-                            <span class="dirname">System</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>`;
+        const root = new TreeEntry(this.fileNode, true, true);
+        this.appendChild(root);
     }
 
     set rootFile(value: ITreeNode) {
