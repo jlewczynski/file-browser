@@ -13,7 +13,7 @@ export class TreePanel extends HTMLElement {
     connectedCallback() {
         const root = new TreeEntry(this.fileNode, true, true);
         this.selected = root;
-        root.addEventListener('nodeselected', e => {
+        root.addEventListener('nodeselect', e => {
             if(this.selected)
                 this.selected.selected = false;
             this.selected = e.target as TreeEntry;

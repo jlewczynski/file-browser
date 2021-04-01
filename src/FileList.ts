@@ -1,61 +1,39 @@
+import { FileListEntry } from "./FileListEntry";
 import { ITreeNode } from "./TreeNode";
 
 export class FileList extends HTMLElement {
-    private fileNodes: ITreeNode[];
+    private _fileNodes: ITreeNode[];
+    private _selected: FileListEntry | null = null;
 
     constructor(files?: ITreeNode[]) {
         super();
-        this.fileNodes = files || [];
+        this._fileNodes = files || [];
     }
 
     connectedCallback() {
-        this.innerHTML =
-            `<div class="row header">
-                <div class="cell name-column">
-                    <div class="icon"></div>Name
-                </div>
-                <div class="cell date-column">Date Modified</div>
-                <div class="cell size-column">File Size</div>
-            </div>
+        const header = this.appendChild(document.createElement('div'));
+        header.className = 'row header';
+        header.innerHTML = `
+        <div class="cell name-column">
+            <div class="icon"></div>Name
+        </div>
+        <div class="cell date-column">Date Modified</div>
+        <div class="cell size-column">File Size</div>`;
 
-            <div class="row">
-                <div class="cell name-column">
-                    <img class="icon" src="./img/dir.png" />Documents
-                </div>
-                <div class="cell date-column">7/6/2020</div>
-                <div class="cell size-column"> </div>
-            </div>
-            <div class="row">
-                <div class="cell name-column">
-                    <img class="icon" src="./img/dir.png" />Images
-                </div>
-                <div class="cell date-column">7/6/2020</div>
-                <div class="cell size-column"> </div>
-            </div>
-            <div class="row">
-                <div class="cell name-column">
-                    <img class="icon" src="./img/dir.png" />System</div>
-                <div class="cell date-column">7/6/2020</div>
-                <div class="cell size-column"> </div>
-            </div>
-            <div class="row">
-                <div class="cell name-column">
-                    <img class="icon" src="./img/rtf.png" />Description.rtf
-                </div>
-                <div class="cell date-column">7/6/2020</div>
-                <div class="cell size-column">1 KB</div>
-            </div>
-            <div class="row selected">
-                <div class="cell name-column">
-                    <img class="icon" src="./img/txt.png" />Description.txt
-                </div>
-                <div class="cell date-column">7/6/2020</div>
-                <div class="cell size-column">2 KB</div>
-            </div>`;
+        this._fileNodes.forEach(node => {
+            this.appendChild(new FileListEntry(node))
+        });
+
+        this.addEventListener('nodeselect', e => {
+            if(this._selected)
+                this._selected.selected = false;
+            this._selected = e.target as FileListEntry;
+            this._selected.selected = true;
+        });
     }
 
     set files(value: ITreeNode[]) {
-        this.fileNodes = value;
+        this._fileNodes = value;
     }
 }
 

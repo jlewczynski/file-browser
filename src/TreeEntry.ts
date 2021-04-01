@@ -1,8 +1,5 @@
+import { NodeSelectEvent } from "./NodeSelectEvent";
 import { ITreeNode } from "./TreeNode";
-
-type NodeSelectEvent = {
-    entry: ITreeNode;
-}
 
 export class TreeEntry extends HTMLElement {
     private _entry: ITreeNode;
@@ -41,15 +38,7 @@ export class TreeEntry extends HTMLElement {
     }
 
     private selectClicked() {
-        this.dispatchEvent(
-            new CustomEvent<NodeSelectEvent>(
-                'nodeselected',
-                {
-                    bubbles: true,
-                    detail: { entry: this._entry }
-                }
-            )
-        );
+        this.dispatchEvent(new NodeSelectEvent(this._entry));
     }
 
     set selected(val: boolean) {
