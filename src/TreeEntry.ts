@@ -1,12 +1,14 @@
 import { ITreeNode } from "./TreeNode";
 
+type NodeSelectEvent = {
+    entry: ITreeNode;
+}
+
 export class TreeEntry extends HTMLElement {
     private _entry: ITreeNode;
     private _opened: boolean;
     private _selected: boolean;
     private _subdirs: ITreeNode[];
-
-    private rendered = false;
 
     constructor(entry: ITreeNode, selected?: boolean, opened?: boolean) {
         super();
@@ -21,17 +23,33 @@ export class TreeEntry extends HTMLElement {
     connectedCallback() {
         this.className = 'node';
         this.selected = this._selected;
-        this.innerHTML = `
-        <span class="arrow"> </span>
-        <div class="contains">
-            <div class="label">
-                <img src="./img/dir.png" />
-                <span class="dirname">${this._entry.name}</span>
-            </div>
-        </div>`;
+
+        this.appendChild(document.createElement('span'))
+        .onclick = () => this.toggle();
+
+        const contains = this.appendChild(document.createElement('div'));
+        contains.className = 'contains';
+
+        const label = contains.appendChild(document.createElement('div'));
+        label.className = 'label';
+        label.innerHTML = `
+        <img src="./img/dir.png" />
+        <span class="dirname">${this._entry.name}</span>`;
+        label.onclick = () => this.selectClicked();
+
         this.update();
-        this.firstElementChild?.addEventListener('click', () => this.toggle());
-        this.rendered = true;
+    }
+
+    private selectClicked() {
+        this.dispatchEvent(
+            new CustomEvent<NodeSelectEvent>(
+                'nodeselected',
+                {
+                    bubbles: true,
+                    detail: { entry: this._entry }
+                }
+            )
+        );
     }
 
     set selected(val: boolean) {
@@ -46,6 +64,8 @@ export class TreeEntry extends HTMLElement {
         if(!this._entry.children?.length)
             return;
         this._opened = !this._opened;
+        if(!this._opened)
+            this.selectClicked();
         this.update();
     }
 
