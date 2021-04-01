@@ -1,0 +1,108 @@
+.viewer {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid lightgray;
+}
+
+.viewer>.left-panel {
+    flex: 1 1 30%;
+    width: 30%;
+    padding: 5px 10px;
+    border-right: 1px solid lightgray;
+}
+
+.node {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.node.selected>.contains>.label {
+    background-color: lightgray;
+}
+
+.arrow {
+    display: inline-block;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+}
+.arrow.opened {
+    background-image: url('../img/arrow-open.svg');
+}
+.arrow.closed {
+    background-image: url('../img/arrow-closed.svg');
+}
+
+.node>.contains {
+    flex: 1 1 1px;
+}
+.node>.contains>.label {
+    display: flex;
+    flex-direction: row;
+    height: 32px;
+}
+.node>.contains>.label>img {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+}
+.node>.contains>.label>.dirname {
+    display: inline-block;
+    flex: 1 1 1px;
+    height: 32px;
+    max-width: calc(100%-32px);
+    margin-left: 2px;
+    line-height: 32px;
+    vertical-align: middle;
+}
+
+.viewer>.right-panel {
+    flex: 1 1 70%;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    flex: 0 0 32px;
+    height: 32px;
+    display: flex;
+    flex-direction: row;
+}
+.row.header {
+    color: darkgray;
+    border-bottom: 1px solid darkgray;
+}
+.row>.cell.name-column {
+    flex: 6 6 60%;
+}
+.row>.cell.date-column {
+    flex: 2 2 20%;
+}
+.row>.cell.size-column {
+    flex: 2 2 20%;
+}
+
+.row>.cell {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    line-height: 32px;
+    vertical-align: middle;
+}
+
+.row>.cell>.icon {
+    width: 32px;
+    height: 32px;
+    padding-left: 10px;
+    padding-right: 5px;
+}
+
+.row.selected {
+    background-color: lightgray;
+}
