@@ -1,5 +1,13 @@
+/**
+ * This represents a file icon. It consists of a bordered div
+ * and a label with the file extension.
+ */
 export class FileIcon extends HTMLElement {
     private ext: string;
+
+    /**
+     * @param ext file extension
+     */
     constructor(ext: string) {
         super();
         this.ext = ext;
