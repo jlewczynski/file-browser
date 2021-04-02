@@ -42,9 +42,9 @@ export class TreePanel extends HTMLElement {
      * to it's child node.
      * @param node target of selection change
      */
-    select(node: ITreeNode) {
+    select(...node: ITreeNode[]) {
         const parent = this._selected ?? this.firstElementChild as TreeEntry;
-        parent.selectChild(node);
+        parent.selectNode(...node);
     }
 
     /**
@@ -62,11 +62,13 @@ export class TreePanel extends HTMLElement {
                 throw new Error('You can select only a folder.');
 
             const path = getPath(this._rootNode, node);
-            let next = path.shift();
-            while (next) {
-                this.select(next);
-                next = path.shift();
-            }
+            if(path.length === 0)
+                throw new Error('This node is not a part of the tree.')
+            //remove the root element from the path, because the selection mechanism
+            //searches through children nodes, so the first element is not a child
+            //of any node
+            path.shift();
+            this.select(...path);
         }
     }
 }

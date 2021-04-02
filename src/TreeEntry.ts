@@ -76,16 +76,26 @@ export class TreeEntry extends HTMLElement {
     }
 
     /**
-     * Selects a child node of the curretn node. If the current node is closed it openes it.
-     * @param entry child file node
+     * Selects a descendant node of the curretn node. If the current node is closed it openes it.
+     *
+     * It takes an array of descendant nodes, starting from its child,
+     * openes those that are closed and selects the final one.
+     *
+     * @param entryPath array of descendant file node
      */
-    selectChild(entry: ITreeNode) {
+    selectNode(...entryPath: ITreeNode[]) {
+        if (entryPath.length === 0) {
+            this.selectClicked();
+            return;
+        }
+
         if (!this._opened)
             this.toggle();
+        const [target, ...rest] = entryPath;
         let child = this.lastElementChild?.firstElementChild?.nextElementSibling;
         while (child) {
-            if ((child as TreeEntry).treeNode === entry) {
-                (child as TreeEntry).selectClicked();
+            if ((child as TreeEntry).treeNode === target) {
+                (child as TreeEntry).selectNode(...rest);
                 break;
             }
             child = child.nextElementSibling;
