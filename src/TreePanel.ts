@@ -38,16 +38,6 @@ export class TreePanel extends HTMLElement {
     }
 
     /**
-     * Moves selection from either the current selected node or the root node, if no node is selected,
-     * to it's child node.
-     * @param node target of selection change
-     */
-    select(...node: ITreeNode[]) {
-        const parent = this._selected ?? this.firstElementChild as TreeEntry;
-        parent.selectNode(...node);
-    }
-
-    /**
      * Gets and sets the currently selected folder.
      */
     get selected() {
@@ -68,7 +58,8 @@ export class TreePanel extends HTMLElement {
             //searches through children nodes, so the first element is not a child
             //of any node
             path.shift();
-            this.select(...path);
+            const parent = this.firstElementChild as TreeEntry | null;
+            parent?.selectNode(...path);
         }
     }
 }

@@ -39,7 +39,7 @@ class FileBrowser extends HTMLElement {
         this._fileList.addEventListener('nodeselect', e => {
             e.stopPropagation();
             if ((e as NodeSelectEvent).detail.open && this._treePanel)
-                this._treePanel.select((e as NodeSelectEvent).detail.entry);
+                this._treePanel.selected = (e as NodeSelectEvent).detail.entry;
         })
     }
 
