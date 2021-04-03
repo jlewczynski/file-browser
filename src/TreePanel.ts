@@ -28,6 +28,10 @@ export class TreePanel extends HTMLElement {
         this.appendChild(root);
     }
 
+    disconnectCallback() {
+        this._selected = null;
+    }
+
     /**
      * Sets the root file node of the panel;
      */
@@ -56,7 +60,7 @@ export class TreePanel extends HTMLElement {
                 throw new Error('This node is not a part of the tree.')
             //remove the root element from the path, because the selection mechanism
             //searches through children nodes, so the first element is not a child
-            //of any node
+            //of any node and cannot be found this way
             path.shift();
             const parent = this.firstElementChild as TreeEntry | null;
             parent?.selectNode(...path);
